@@ -43,13 +43,8 @@ class ConnectionControl(ConnectionControlInterface):
         self._syscmd = syscmd or SystemCommand()
 
     def __call__(self) -> List[Connection]:
-        r = self._syscmd.nmcli('connection')
-        results = []
-        for row in r.split('\n')[1:]:
-            if len(row) == 0:
-                continue
-            results.append(Connection.parse(row))
-        return results
+        r = self._syscmd.nmcli(['--fields', 'all', '--terse', 'connection'])
+        return Connection.parseAll(r)
 
     def add(self,
             conn_type: str,
